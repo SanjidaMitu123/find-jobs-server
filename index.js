@@ -11,7 +11,7 @@ app.use(express.json());
 
 // sanjidamitu456
 // yqXSY9g3I7IkGS9o
-console.log(process.env.DB_USER)
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5du28se.mongodb.net/?retryWrites=true&w=majority`;
@@ -33,6 +33,13 @@ async function run() {
 
     const jobCollection = client.db('jobDB').collection('job');
     const categorylist = client.db('jobDB').collection('category');
+
+
+        app.get('/jobs', async(req,res)=>{
+      const cursor = jobCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
     app.post('/jobs', async(req,res)=>{
       const newjob = req.body;
