@@ -31,13 +31,13 @@ async function run() {
     await client.connect();
 
 
-    // const jobCollection = client.db('jobDB').collection('job');
+    const jobCollection = client.db('jobDB').collection('job');
 
     app.post('/jobs', async(req,res)=>{
       const newjob = req.body;
       console.log(newjob) ;
-      // const result = await jobCollection.insertOne(newjob);
-      // res.send(result);
+      const result = await jobCollection.insertOne(newjob);
+      res.send(result);
     })
 
 
