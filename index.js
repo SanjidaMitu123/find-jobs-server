@@ -32,7 +32,7 @@ async function run() {
 
 
     const jobCollection = client.db('jobDB').collection('job');
-    
+    const categorylist = client.db('jobDB').collection('category');
 
     app.post('/jobs', async(req,res)=>{
       const newjob = req.body;
@@ -43,7 +43,8 @@ async function run() {
 app.post('/category', async(req,res)=>{
       const newcategory  = req.body;
       console.log(newcategory ) ;
-     
+      const result = await categorylist.insertOne(newcategory );
+      res.send(result);
     })
 
 
