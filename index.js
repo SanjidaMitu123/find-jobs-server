@@ -33,7 +33,7 @@ async function run() {
 
     const jobCollection = client.db('jobDB').collection('job');
     const categorylist = client.db('jobDB').collection('category');
-
+    const bidlist = client.db('jobDB').collection('bid');
 
         app.get('/jobs', async(req,res)=>{
       const cursor = jobCollection.find();
@@ -47,10 +47,17 @@ async function run() {
       const result = await jobCollection.insertOne(newjob);
       res.send(result);
     })
+    
 app.post('/category', async(req,res)=>{
       const newcategory  = req.body;
       console.log(newcategory ) ;
       const result = await categorylist.insertOne(newcategory );
+      res.send(result);
+    })
+    app.post('/bids', async(req,res)=>{
+      const newbid  = req.body;
+      console.log(newbid) ;
+      const result = await bidlist.insertOne(newbid );
       res.send(result);
     })
 
