@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const app = express();
 const port =process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 app.use(cors());
@@ -33,14 +33,9 @@ async function run() {
 
     const jobCollection = client.db('jobDB').collection('job');
     const categorylist = client.db('jobDB').collection('category');
-    const bidlist = client.db('jobDB').collection('bid');
+    const bidslist = client.db('jobDB').collection('bid');
 
-        app.get('/jobs', async(req,res)=>{
-      const cursor = jobCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    })
-
+      
     app.post('/jobs', async(req,res)=>{
       const newjob = req.body;
       console.log(newjob) ;
@@ -54,12 +49,108 @@ app.post('/category', async(req,res)=>{
       const result = await categorylist.insertOne(newcategory );
       res.send(result);
     })
+    
     app.post('/bids', async(req,res)=>{
       const newbid  = req.body;
       console.log(newbid) ;
-      const result = await bidlist.insertOne(newbid );
+      const result = await bidslist.insertOne(newbid);
       res.send(result);
     })
+
+
+    // update
+    app.get('/jobs/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await jobCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.get('/bids/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await bidslist.findOne(query);
+      res.send(result);
+    })
+
+
+    app.put('/jobs/:id', async(req,res)=>{
+       
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert:true};
+      const updatedjob = req.body;
+      const job = {
+        $set:{
+          employername : updatedjob.employername,
+           jobtitle  : updatedjob.jobtitle ,
+           deadline : updatedjob.deadline,
+           description: updatedjob.description,
+           minimumprice : updatedjob. minimumprice,
+           maxprice :updatedjob.maxprice,
+           category: updatedjob.category,
+           img : updatedjob.img,
+           
+        }
+      }
+     const result = await jobCollection.updateOne(filter,job,options);
+     res.send(result);
+
+    })
+
+    app.put('/bids/:id', async(req,res)=>{
+       
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert:true};
+      const updatedjob = req.body;
+      const job = {
+        $set:{
+          status : updatedjob.status,
+         
+           
+        }
+      }
+     const result = await jobCollection.updateOne(filter,job,options);
+     res.send(result);
+
+    })
+
+
+
+    //delete
+
+    app.delete('/jobs/:id', async (req,res)=>{
+          const id = req.params.id;
+          console.log(id);
+          const query = {_id: new ObjectId(id)}
+          const result = await jobCollection.deleteOne(query);
+          res.send(result);
+
+    })
+
+    
+
+    app.get('/jobs', async(req,res)=>{
+
+
+      let queryobj={}
+      const employername = req.query.employername;
+      if(employername){
+        queryobj.employername = employername;
+      }
+      const cursor = jobCollection.find(queryobj);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+
+    app.get('/bids', async(req,res)=>{
+      const cursor = bidslist.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
 
 
 
